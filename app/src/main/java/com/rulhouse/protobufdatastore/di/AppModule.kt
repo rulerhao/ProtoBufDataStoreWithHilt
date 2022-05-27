@@ -5,6 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.dataStore
+import androidx.datastore.dataStoreFile
+import androidx.datastore.migrations.SharedPreferencesView
 import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
@@ -31,31 +33,20 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    private const val USER_PREFERENCES = "user_preferences"
+    private val USER_PREFERENCES_NAME = "user_preferences"
+    private val DATA_STORE_FILE_NAME = "user_prefs.pb"
+    private val SORT_ORDER_KEY = "sort_order"
 
-    private val Context.recentLocationsDataStore: DataStore<UserPreferences> by dataStore(
-        fileName = "user_prefs.pb",
-        serializer = UserPreferencesSerializer
-    )
-
-//    @Singleton
-//    @Provides
-//    fun providePreferencesDataStore(@ApplicationContext appContext: Context): DataStore<UserPreferences> {
-//        return DataStoreFactory.create(
-//            serializer = UserPreferencesSerializer,
-//            corruptionHandler = ReplaceFileCorruptionHandler(
-//                produceNewData = { emptyPreferences() }
-//            ),
-//            migrations = listOf(SharedPreferencesMigration(appContext,USER_PREFERENCES)),
-//            scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-//            produceFile = { appContext.preferencesDataStoreFile(USER_PREFERENCES) }
-//        )
-//    }
-
-    @Provides
     @Singleton
-    fun provideProtoDataStore(@ApplicationContext context: Context): DataStore<UserPreferences> =
-        context.recentLocationsDataStore
+    @Provides
+    fun provideProtoDataStore(@ApplicationContext appContext: Context): DataStore<UserPreferences> {
+        return DataStoreFactory.create(
+            serializer = UserPreferencesSerializer,
+            produceFile = { appContext.dataStoreFile(DATA_STORE_FILE_NAME) },
+            corruptionHandler = null,
+            scope = CoroutineScope (Dispatchers.IO + SupervisorJob())
+        )
+    }
 
     @Provides
     @Singleton

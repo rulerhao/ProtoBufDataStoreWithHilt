@@ -24,42 +24,14 @@ import com.rulhouse.protobufdatastore.data.UserPreferencesRepository
 import com.rulhouse.protobufdatastore.data.UserPreferencesSerializer
 import com.rulhouse.protobufdatastore.datastore.UserPreferences
 import com.rulhouse.protobufdatastore.ui.theme.ProtoBufDataStoreTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.io.OutputStream
 
-
-private val USER_PREFERENCES_NAME = "user_preferences"
-private val DATA_STORE_FILE_NAME = "user_prefs.pb"
-private val SORT_ORDER_KEY = "sort_order"
-
-private val Context.userPreferencesStore: DataStore<UserPreferences> by dataStore(
-    fileName = DATA_STORE_FILE_NAME,
-    serializer = UserPreferencesSerializer,
-    produceMigrations = { context ->
-        listOf(
-            SharedPreferencesMigration(
-                context,
-                USER_PREFERENCES_NAME,
-            ) { sharedPrefs: SharedPreferencesView, currentData: UserPreferences ->
-                // Define the mapping from SharedPreferences to UserPreferences
-
-//                if (currentData.sortOrder == SortOrder.UNSPECIFIED) {
-//                    currentData.toBuilder().setSortOrder(
-//                        SortOrder.valueOf(
-//                            sharedPrefs.getString(SORT_ORDER_KEY, SortOrder.NONE.name)!!
-//                        )
-//                    ).build()
-//                } else {
-                    currentData
-//                }
-            }
-        )
-    }
-)
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
