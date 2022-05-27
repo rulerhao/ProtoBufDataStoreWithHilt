@@ -1,17 +1,22 @@
 package com.rulhouse.protobufdatastore.di
 
 import android.content.Context
+import androidx.datastore.core.DataMigration
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.dataStore
 import androidx.datastore.dataStoreFile
+import androidx.datastore.migrations.SharedPreferencesMigration
 import androidx.datastore.migrations.SharedPreferencesView
 import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.room.migration.Migration
 import com.rulhouse.protobufdatastore.data.UserPreferencesRepository
 import com.rulhouse.protobufdatastore.data.UserPreferencesSerializer
 import com.rulhouse.protobufdatastore.datastore.UserPreferences
@@ -28,6 +33,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import javax.inject.Singleton
 
 @Module
@@ -44,7 +50,17 @@ object AppModule {
             serializer = UserPreferencesSerializer,
             produceFile = { appContext.dataStoreFile(DATA_STORE_FILE_NAME) },
             corruptionHandler = null,
-            scope = CoroutineScope (Dispatchers.IO + SupervisorJob())
+            migrations = listOf(
+                SharedPreferencesMigration(
+                    appContext,
+                    USER_PREFERENCES_NAME
+                ) { sharedPrefs: SharedPreferencesView, currentData: UserPreferences ->
+                    // Define the mapping from SharedPreferences to UserPreferences
+                    currentData.toBuilder().showCompleted = sharedPrefs.getBoolean("show_completed", false)
+                    currentData
+                }
+            ),
+            scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
         )
     }
 

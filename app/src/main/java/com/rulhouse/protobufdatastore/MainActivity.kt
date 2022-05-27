@@ -19,10 +19,12 @@ import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
 import androidx.datastore.migrations.SharedPreferencesMigration
 import androidx.datastore.migrations.SharedPreferencesView
+import androidx.datastore.preferences.SharedPreferencesMigration
 import com.google.protobuf.InvalidProtocolBufferException
 import com.rulhouse.protobufdatastore.data.UserPreferencesRepository
 import com.rulhouse.protobufdatastore.data.UserPreferencesSerializer
 import com.rulhouse.protobufdatastore.datastore.UserPreferences
+import com.rulhouse.protobufdatastore.di.AppModule
 import com.rulhouse.protobufdatastore.ui.theme.ProtoBufDataStoreTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
@@ -33,6 +35,7 @@ import java.io.OutputStream
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val USER_PREFERENCES_NAME = "user_preferences"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
