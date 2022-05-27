@@ -15,9 +15,8 @@ import kotlinx.coroutines.SupervisorJob
 
 class UserPreferencesDataStoreFactory {
     companion object {
-        private val USER_PREFERENCES_NAME = "user_preferences"
-        private val DATA_STORE_FILE_NAME = "user_prefs.pb"
-        private val SORT_ORDER_KEY = "sort_order"
+        private const val USER_PREFERENCES_NAME = "user_preferences"
+        private const val DATA_STORE_FILE_NAME = "user_prefs.pb"
 
         fun create(context: Context): DataStore<UserPreferences> {
             return DataStoreFactory.create(
@@ -26,8 +25,8 @@ class UserPreferencesDataStoreFactory {
                 corruptionHandler = null,
                 migrations = listOf(
                     SharedPreferencesMigration(
-                        context,
-                        USER_PREFERENCES_NAME
+                        context = context,
+                        sharedPreferencesName = USER_PREFERENCES_NAME
                     ) { sharedPrefs: SharedPreferencesView, currentData: UserPreferences ->
                         // Define the mapping from SharedPreferences to UserPreferences
                         currentData.toBuilder().showCompleted = sharedPrefs.getBoolean("show_completed", false)
