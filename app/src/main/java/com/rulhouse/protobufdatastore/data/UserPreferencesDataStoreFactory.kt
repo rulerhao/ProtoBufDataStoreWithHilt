@@ -7,8 +7,6 @@ import androidx.datastore.dataStoreFile
 import androidx.datastore.migrations.SharedPreferencesMigration
 import androidx.datastore.migrations.SharedPreferencesView
 import com.rulhouse.protobufdatastore.datastore.UserPreferences
-import com.rulhouse.protobufdatastore.di.AppModule
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
