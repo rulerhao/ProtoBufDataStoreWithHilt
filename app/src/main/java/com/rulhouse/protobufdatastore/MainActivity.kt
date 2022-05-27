@@ -35,7 +35,6 @@ import java.io.OutputStream
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val USER_PREFERENCES_NAME = "user_preferences"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

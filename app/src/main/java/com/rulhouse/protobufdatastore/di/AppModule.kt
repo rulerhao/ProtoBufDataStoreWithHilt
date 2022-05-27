@@ -17,6 +17,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.migration.Migration
+import com.rulhouse.protobufdatastore.data.UserPreferencesDataStoreFactory
 import com.rulhouse.protobufdatastore.data.UserPreferencesRepository
 import com.rulhouse.protobufdatastore.data.UserPreferencesSerializer
 import com.rulhouse.protobufdatastore.datastore.UserPreferences
@@ -39,29 +40,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    private val USER_PREFERENCES_NAME = "user_preferences"
-    private val DATA_STORE_FILE_NAME = "user_prefs.pb"
-    private val SORT_ORDER_KEY = "sort_order"
 
     @Singleton
     @Provides
     fun provideProtoDataStore(@ApplicationContext appContext: Context): DataStore<UserPreferences> {
-        return DataStoreFactory.create(
-            serializer = UserPreferencesSerializer,
-            produceFile = { appContext.dataStoreFile(DATA_STORE_FILE_NAME) },
-            corruptionHandler = null,
-            migrations = listOf(
-                SharedPreferencesMigration(
-                    appContext,
-                    USER_PREFERENCES_NAME
-                ) { sharedPrefs: SharedPreferencesView, currentData: UserPreferences ->
-                    // Define the mapping from SharedPreferences to UserPreferences
-                    currentData.toBuilder().showCompleted = sharedPrefs.getBoolean("show_completed", false)
-                    currentData
-                }
-            ),
-            scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-        )
+        return UserPreferencesDataStoreFactory.create(appContext)
     }
 
     @Provides
